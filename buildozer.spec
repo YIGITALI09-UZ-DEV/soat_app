@@ -39,6 +39,9 @@ version = 0.1
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
 # version.filename = %(source.dir)s/main.py
+# Eng muhimlari - FreeType uchun:
+android.enable_proguard = 0
+android.gradle_options = org.gradle.jvmargs=-Xmx2048m
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
