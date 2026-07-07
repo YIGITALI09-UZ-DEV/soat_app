@@ -9,7 +9,7 @@
 title = Unimli ish
 
 # (str) Package name
-package.name =  = yigitali
+package.name  = yigitali
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.yigitali
@@ -45,7 +45,7 @@ android.gradle_options = org.gradle.jvmargs=-Xmx2048m
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3==3.10.10,hostpython3==3.10.10,  kivy==2.2.0, requests, urllib3, certifi, pillow
+requirements = python3==3.10.10,hostpython3==3.10.10,  kivy==2.1.0, requests, urllib3, certifi, pillow
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -317,7 +317,7 @@ android.allow_backup = True
 # android.no-byte-compile-python = False
 
 # (str) The format used to package the app for release mode (aab or apk or aar).
- android.release_artifact = aab
+android.release_artifact = apk
 
 # (str) The format used to package the app for debug mode (apk or aar).
 # android.debug_artifact = apk
