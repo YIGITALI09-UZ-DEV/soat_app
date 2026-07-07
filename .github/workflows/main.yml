@@ -24,17 +24,19 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Pre-install critical dependencies
+    - name: Update package manager
       run: |
         sudo apt-get update
-        sudo apt-get install -y libunwind-dev libtool
+        sudo apt-get upgrade -y
 
-    - name: Install Ubuntu Dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get install -y \
           build-essential \
           git \
           ffmpeg \
+          libunwind-dev \
+          libtool \
           libsdl2-dev \
           libsdl2-image-dev \
           libsdl2-mixer-dev \
@@ -56,25 +58,46 @@ jobs:
           automake \
           pkg-config \
           ccache \
-          clang
+          clang \
+          libclang-dev \
+          lld \
+          ninja-build \
+          wget \
+          curl \
+          ant
 
-    - name: Install Buildozer and Dependencies
+    - name: Install Python dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade "buildozer>=1.5.0" cython virtualenv
+        python -m pip install --upgrade pip setuptools wheel
+        pip install --upgrade "buildozer>=1.5.0" cython virtualenv pycryptodome
 
-    - name: Build with Buildozer
+    - name: Setup environment variables
       run: |
-        export ACLOCAL_PATH=/usr/share/aclocal
-        export PATH=$PATH:/usr/bin
-        
-        # 'debug' o'rniga 'release' ishlatilmoqda
+        echo "ACLOCAL_PATH=/usr/share/aclocal" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "LDFLAGS=-L/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/usr/include" >> $GITHUB_ENV
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
+
+    - name: Build APK with Buildozer
+      run: |
         yes | buildozer android debug
       env:
         BUILDOZER_ALLOW_SDK_DOWNLOAD: 1
+        BUILDOZER_LOG_LEVEL: 2
 
     - name: Upload APK artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: package-apk
+        name: soat-app-debug
         path: bin/*.apk
+        retention-days: 30
+
+    - name: Show build logs on failure
+      if: failure()
+      run: |
+        if [ -f ".buildozer/android/platform/build-arm64-v8a/build/other_builds/freetype/arm64-v8a__ndk_target_28/freetype/config.log" ]; then
+          tail -100 ".buildozer/android/platform/build-arm64-v8a/build/other_builds/freetype/arm64-v8a__ndk_target_28/freetype/config.log"
+        fi
